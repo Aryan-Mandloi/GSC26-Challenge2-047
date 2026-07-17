@@ -6,9 +6,11 @@ import csv
 import copy
 from glob import glob
 from collections import defaultdict
+import argparse
+from typing import List, Dict, Tuple, Set, Any
 
 # Base untrusted github contexts
-BASE_TAINTED = [
+BASE_TAINTED: List[str] = [
     'github.event.issue.title',
     'github.event.issue.body',
     'github.event.issue.pull_request',
@@ -30,8 +32,11 @@ BASE_TAINTED = [
     'github.ref',
 ]
 
-def is_tainted(expr, tainted_vars):
-    # Check if expr contains any base tainted or dynamically tainted vars
+def is_tainted(expr: str, tainted_vars: Set[str]) -> bool:
+    """
+    Check if a given string expression contains any known untrusted data (tainted variables).
+    Checks against both the statically known base contexts and dynamically tracked variables.
+    """
     expr = expr.strip()
     for base in BASE_TAINTED:
         if re.search(base, expr):
